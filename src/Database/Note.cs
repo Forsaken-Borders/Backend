@@ -5,12 +5,12 @@ using System.ComponentModel.DataAnnotations;
 namespace Kiki.Database
 {
     /// <summary>
-    /// A note for a <see cref="Database.User"/>.
+    /// A note for a <see cref="User"/>.
     /// </summary>
     public class Note
     {
         [Key]
-        public int Id { get; }
+        public Guid Id { get; }
         /// <summary>
         /// Title of the note.
         /// </summary>
@@ -27,9 +27,9 @@ namespace Kiki.Database
         public string ContentHash { get; set; }
 
         /// <summary>
-        /// TODO: Replace with an author type or id. Can optionally be transferred to other users.
+        /// The user who owns the note. Notes can be transferred to other users.
         /// </summary>
-        public string Author { get; set; }
+        public User Owner { get; set; }
 
         /// <summary>
         /// A bunch of tags that can be used to categorize the note.
