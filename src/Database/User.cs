@@ -60,6 +60,7 @@ namespace Kiki.Database
         /// The user's email. Never exposed to the API.
         /// </summary>
         [JsonIgnore]
+        [EmailAddress]
         public string Email { get; set; }
 
         /// <summary>
@@ -83,6 +84,7 @@ namespace Kiki.Database
         /// <summary>
         /// The user's display name. May be duplicates.
         /// </summary>
+        [StringLength(32)]
         public string Username { get; set; }
     }
 }

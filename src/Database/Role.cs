@@ -27,7 +27,7 @@ namespace Kiki.Database
         /// <summary>
         /// If the role is official and shows off that it's recognized by the Kiki suite.
         /// </summary>
-        public bool Official { get; set; }
+        public bool IsOfficial { get; set; }
 
         /// <summary>
         /// The role icon.
