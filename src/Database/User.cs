@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json.Serialization;
+using Kiki.Api.v1.Payloads;
 
 namespace Kiki.Database
 {
@@ -10,6 +13,20 @@ namespace Kiki.Database
     /// </summary>
     public class User
     {
+        /// <summary>
+        /// Creates a new user.
+        /// </summary>
+        /// <param name="userPayload">Retrieved from the API. See <see cref="UserPayload"/>.</param>
+        /// <param name="sha512Generator">Used to calculate the password hash.</param>
+        public User(UserPayload userPayload, SHA512 sha512Generator)
+        {
+            Id = Guid.NewGuid();
+            Username = userPayload.Username;
+            Email = userPayload.Email;
+            PasswordHash = sha512Generator.ComputeHash(Encoding.UTF8.GetBytes(userPayload.Password));
+            CreatedAt = DateTime.UtcNow;
+        }
+
         /// <summary>
         /// The GUID of the user. Shouldn't ever change, and should be unique.
         /// </summary>
@@ -49,6 +66,7 @@ namespace Kiki.Database
         /// <summary>
         /// The roles the user has.
         /// </summary>
+        [MaxLength(200)]
         public List<Role> Roles { get; set; }
 
         /// <summary>
@@ -61,13 +79,14 @@ namespace Kiki.Database
         /// </summary>
         [JsonIgnore]
         [EmailAddress]
+        [MaxLength(320)]
         public string Email { get; set; }
 
         /// <summary>
         /// The user's password hash. Never exposed to the API.
         /// </summary>
         [JsonIgnore]
-        public string PasswordHash { get; set; }
+        public byte[] PasswordHash { get; set; }
 
         /// <summary>
         /// The user's login token. Used to verify that the user is logged in. Never exposed to the API.
@@ -84,7 +103,7 @@ namespace Kiki.Database
         /// <summary>
         /// The user's display name. May be duplicates.
         /// </summary>
-        [StringLength(32)]
+        [StringLength(32, MinimumLength = 3)]
         public string Username { get; set; }
     }
 }

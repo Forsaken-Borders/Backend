@@ -13,6 +13,12 @@ namespace Kiki.Database
     /// </summary>
     public class Note
     {
+        /// <summary>
+        /// Creates a new note.
+        /// </summary>
+        /// <param name="notePayload">Retrieved from the API. See <see cref="NotePayload"/>.</param>
+        /// <param name="owner">Who created the note.</param>
+        /// <param name="sha512Generator">Used for creating the Content and Thumbnail hashes.</param>
         public Note(NotePayload notePayload, User owner, SHA512 sha512Generator)
         {
             Content = notePayload.Content;
@@ -35,7 +41,6 @@ namespace Kiki.Database
         /// </summary>
         [Required]
         [StringLength(100)]
-        [Column(TypeName = "VARCHAR")]
         public string Title { get; set; }
 
         /// <summary>
@@ -43,7 +48,6 @@ namespace Kiki.Database
         /// </summary>
         [Required]
         [StringLength(10000)]
-        [Column(TypeName = "VARCHAR")]
         public string Content { get; set; }
 
         /// <summary>

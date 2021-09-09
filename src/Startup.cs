@@ -30,13 +30,16 @@ namespace Kiki
             services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(Log.Logger, true));
             services.AddRouting();
             services.AddControllers();
+            services.AddAuthorization(options =>
+            {
+                // TODO: User token validation
+            });
         }
 
         public void Configure(IApplicationBuilder app)
         {
             app.UseRouting();
             app.UseAuthorization();
-            app.UseAuthentication();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
