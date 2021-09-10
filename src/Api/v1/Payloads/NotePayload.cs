@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Kiki.Api.v1.Payloads
+namespace ForSakenBorders.Api.v1.Payloads
 {
     /// <summary>
     /// The payload the user sends to create or edit a new note.

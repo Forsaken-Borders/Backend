@@ -1,6 +1,6 @@
 using System;
 
-namespace Kiki.Database
+namespace ForSakenBorders.Database
 {
     /// <summary>
     /// Determines which actions a role can perform.

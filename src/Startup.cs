@@ -1,12 +1,14 @@
 using System;
 using System.Globalization;
-using Kiki.Utilities;
+using System.Security.Cryptography;
+using ForSakenBorders.Utilities;
+using ForSakenBorders.Utilities.Config;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
-namespace Kiki
+namespace ForSakenBorders
 {
     public class Startup
     {
@@ -26,14 +28,12 @@ namespace Kiki
 
             loggerConfiguration.WriteTo.File($"logs/{DateTime.Now.ToLocalTime().ToString("yyyy'-'MM'-'dd' 'HH':'mm':'ss", CultureInfo.InvariantCulture)}.log", rollingInterval: RollingInterval.Day, outputTemplate: outputTemplate);
             Log.Logger = loggerConfiguration.CreateLogger();
-
+            services.AddSingleton(SHA512.Create());
             services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(Log.Logger, true));
             services.AddRouting();
             services.AddControllers();
-            services.AddAuthorization(options =>
-            {
-                // TODO: User token validation
-            });
+            Config config = Config.Load().GetAwaiter().GetResult();
+            config.Database.Load(services).GetAwaiter().GetResult();
         }
 
         public void Configure(IApplicationBuilder app)

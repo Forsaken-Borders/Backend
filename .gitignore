@@ -1,3 +1,6 @@
 bin/
 obj/
 logs/
+res/config.jsonc.prod
+.vscode/
+.obsidian/

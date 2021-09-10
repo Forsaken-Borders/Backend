@@ -3,13 +3,13 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using Kiki.Api.v1.Payloads;
-using Kiki.Database;
+using ForSakenBorders.Api.v1.Payloads;
+using ForSakenBorders.Database;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Kiki.Api.v1
+namespace ForSakenBorders.Api.v1
 {
     [Authorize("UserTokenHandler")]
     [ApiController]
@@ -17,17 +17,19 @@ namespace Kiki.Api.v1
     public class Notes : ControllerBase
     {
         private readonly SHA512 _sha512Generator;
-        private readonly KikiContext _database;
+        private readonly ForSakenBordersContext _database;
 
-        public Notes(KikiContext kikiContext, SHA512 sha512Generator)
+        public Notes(ForSakenBordersContext forSakenBordersContext, SHA512 sha512Generator)
         {
-            _database = kikiContext;
+            _database = forSakenBordersContext;
             _sha512Generator = sha512Generator;
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get([FromHeader] string authorization, Guid id, [FromHeader] string expect = null)
+        public async Task<IActionResult> Get(Guid id)
         {
+            string authorizationToken = Request.Headers["Authorization"];
+            Guid authorization = Guid.Parse(authorizationToken);
             User user = await _database.Users.FirstOrDefaultAsync(databaseUser => databaseUser.Token == authorization);
             if (user is null)
             {
@@ -44,14 +46,16 @@ namespace Kiki.Api.v1
                 return Unauthorized("Not the owner of the note and missing the \"ViewAll\" permission.");
             }
 
-            return _sha512Generator.ComputeHash(Encoding.UTF8.GetBytes(note.Content)) != note.ContentHash && expect != "100-continue"
+            return _sha512Generator.ComputeHash(Encoding.UTF8.GetBytes(note.Content)) != note.ContentHash && Request.Headers["Expect"] != "100-continue"
                 ? StatusCode(500, "The note's content does not rehash to the note's hash. This means the content is highly likely to have been modified without the use of the API, and it could be dangerous to open up the note. To retrieve the contents regardless, pass the \"Expect: 100-continue\" header.")
                 : Ok(note);
         }
 
-        [HttpPost()]
-        public async Task<IActionResult> Post([FromHeader] string authorization, [FromBody] NotePayload notePayload)
+        [HttpPost]
+        public async Task<IActionResult> Post(NotePayload notePayload)
         {
+            string authorizationToken = Request.Headers["Authorization"];
+            Guid authorization = Guid.Parse(authorizationToken);
             User user = await _database.Users.FirstOrDefaultAsync(databaseUser => databaseUser.Token == authorization);
             if (user is null)
             {
@@ -75,15 +79,17 @@ namespace Kiki.Api.v1
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete([FromHeader] string authorization, [FromBody] Guid noteId)
+        public async Task<IActionResult> Delete(Guid id)
         {
+            string authorizationToken = Request.Headers["Authorization"];
+            Guid authorization = Guid.Parse(authorizationToken);
             User user = await _database.Users.FirstOrDefaultAsync(databaseUser => databaseUser.Token == authorization);
             if (user is null)
             {
                 return Unauthorized("Invalid authorization token.");
             }
 
-            Note note = await _database.Notes.FirstOrDefaultAsync(databaseNote => databaseNote.Id == noteId);
+            Note note = await _database.Notes.FirstOrDefaultAsync(databaseNote => databaseNote.Id == id);
             if (note is null)
             {
                 return NotFound();
@@ -104,8 +110,10 @@ namespace Kiki.Api.v1
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Patch([FromHeader] string authorization, [FromBody] NotePayload newNote)
+        public async Task<IActionResult> Patch(NotePayload newNote)
         {
+            string authorizationToken = Request.Headers["Authorization"];
+            Guid authorization = Guid.Parse(authorizationToken);
             User user = await _database.Users.FirstOrDefaultAsync(databaseUser => databaseUser.Token == authorization);
             if (user is null)
             {

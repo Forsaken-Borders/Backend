@@ -1,0 +1,10 @@
+{
+    "database": {
+        "application_name": "Kiki",
+        "database_name": "kiki",
+        "host": "example.com",
+        "port": 5432,
+        "username": "kiki",
+        "password": "redacted"
+    }
+}

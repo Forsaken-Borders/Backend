@@ -2,12 +2,11 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Kiki
+namespace ForSakenBorders
 {
     public class Program
     {
         // TODO: Command line arguments
-        // TODO: Read from config file
         public static void Main(string[] args) => CreateHostBuilder(args).Build().Run();
 
         public static IHostBuilder CreateHostBuilder(string[] args) => Host

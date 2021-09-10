@@ -1,18 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Security.Cryptography;
 using System.Text;
-using Kiki.Api.v1.Payloads;
+using ForSakenBorders.Api.v1.Payloads;
 
-namespace Kiki.Database
+namespace ForSakenBorders.Database
 {
     /// <summary>
     /// A note for a <see cref="User"/>.
     /// </summary>
     public class Note
     {
+        internal Note() { }
+
         /// <summary>
         /// Creates a new note.
         /// </summary>
@@ -34,7 +35,7 @@ namespace Kiki.Database
         /// The GUID of the note. Shouldn't ever change, and should be unique.
         /// </summary>
         [Key]
-        public Guid Id { get; }
+        public Guid Id { get; } = Guid.NewGuid();
 
         /// <summary>
         /// Title of the note.

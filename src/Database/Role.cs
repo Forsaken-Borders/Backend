@@ -1,18 +1,20 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Kiki.Database
+namespace ForSakenBorders.Database
 {
     /// <summary>
     /// Roles that are attached to a <see cref="User"/>. Determines which actions a <see cref="User"/> can perform, and shows status.
     /// </summary>
     public class Role
     {
+        internal Role() { }
+
         /// <summary>
         /// The GUID of the role. Shouldn't ever change, and should be unique.
         /// </summary>
         [Key]
-        public Guid Id { get; set; }
+        public Guid Id { get; } = Guid.NewGuid();
 
         /// <summary>
         /// The name of the role. Can be duplicated.
@@ -25,7 +27,7 @@ namespace Kiki.Database
         public string Description { get; set; }
 
         /// <summary>
-        /// If the role is official and shows off that it's recognized by the Kiki suite.
+        /// If the role is official and shows off that it's recognized by the ForSaken Borders software.
         /// </summary>
         public bool IsOfficial { get; set; }
 
