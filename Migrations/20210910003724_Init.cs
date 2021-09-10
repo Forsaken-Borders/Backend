@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace ForSakenBorders.Migrations
+namespace ForSakenBorders.Backend.Migrations
 {
     public partial class Init : Migration
     {

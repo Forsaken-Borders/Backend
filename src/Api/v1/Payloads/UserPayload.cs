@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using ForSakenBorders.Database;
+using ForSakenBorders.Backend.Database;
 
-namespace ForSakenBorders.Api.v1.Payloads
+namespace ForSakenBorders.Backend.Api.v1.Payloads
 {
     /// <summary>
     /// The payload the user sends to create or edit a new user.

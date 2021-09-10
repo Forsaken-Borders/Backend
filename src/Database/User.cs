@@ -4,9 +4,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json.Serialization;
-using ForSakenBorders.Api.v1.Payloads;
+using ForSakenBorders.Backend.Api.v1.Payloads;
 
-namespace ForSakenBorders.Database
+namespace ForSakenBorders.Backend.Database
 {
     /// <summary>
     /// A user to be used across all of the ForSaken Borders software.

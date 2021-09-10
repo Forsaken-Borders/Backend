@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace ForSakenBorders.Database
+namespace ForSakenBorders.Backend.Database
 {
     /// <summary>
     /// Roles that are attached to a <see cref="User"/>. Determines which actions a <see cref="User"/> can perform, and shows status.

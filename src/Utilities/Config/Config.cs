@@ -5,7 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace ForSakenBorders.Utilities.Config
+namespace ForSakenBorders.Backend.Utilities.Config
 {
     public class Config
     {

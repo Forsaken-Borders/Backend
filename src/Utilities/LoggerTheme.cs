@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using Serilog.Sinks.SystemConsole.Themes;
 
-namespace ForSakenBorders.Utilities
+namespace ForSakenBorders.Backend.Utilities
 {
     public class LoggerTheme : ConsoleTheme
     {

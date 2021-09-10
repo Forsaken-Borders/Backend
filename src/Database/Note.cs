@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography;
 using System.Text;
-using ForSakenBorders.Api.v1.Payloads;
+using ForSakenBorders.Backend.Api.v1.Payloads;
 
-namespace ForSakenBorders.Database
+namespace ForSakenBorders.Backend.Database
 {
     /// <summary>
     /// A note for a <see cref="User"/>.

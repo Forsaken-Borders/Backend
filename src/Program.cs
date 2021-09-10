@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace ForSakenBorders
+namespace ForSakenBorders.Backend
 {
     public class Program
     {

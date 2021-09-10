@@ -1,14 +1,14 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace ForSakenBorders.Database
+namespace ForSakenBorders.Backend.Database
 {
-    public class ForSakenBordersContext : DbContext
+    public class BackendContext : DbContext
     {
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Note> Notes { get; set; }
 
-        public ForSakenBordersContext(DbContextOptions<ForSakenBordersContext> options) : base(options) { }
+        public BackendContext(DbContextOptions<BackendContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

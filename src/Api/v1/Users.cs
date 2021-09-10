@@ -3,21 +3,21 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using ForSakenBorders.Api.v1.Payloads;
-using ForSakenBorders.Database;
+using ForSakenBorders.Backend.Api.v1.Payloads;
+using ForSakenBorders.Backend.Database;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace ForSakenBorders.Api.v1
+namespace ForSakenBorders.Backend.Api.v1
 {
     [ApiController]
     [Route("/api/v1/users")]
     public class Users : ControllerBase
     {
         private readonly SHA512 _sha512Generator;
-        private readonly ForSakenBordersContext _database;
+        private readonly BackendContext _database;
 
-        public Users(ForSakenBordersContext forSakenBordersContext, SHA512 sha512Generator)
+        public Users(BackendContext forSakenBordersContext, SHA512 sha512Generator)
         {
             _database = forSakenBordersContext;
             _sha512Generator = sha512Generator;

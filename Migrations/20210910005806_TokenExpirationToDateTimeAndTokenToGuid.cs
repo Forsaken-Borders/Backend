@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace ForSakenBorders.Migrations
+namespace ForSakenBorders.Backend.Migrations
 {
     public partial class TokenExpirationToDateTimeAndTokenToGuid : Migration
     {

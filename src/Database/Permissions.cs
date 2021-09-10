@@ -1,6 +1,6 @@
 using System;
 
-namespace ForSakenBorders.Database
+namespace ForSakenBorders.Backend.Database
 {
     /// <summary>
     /// Determines which actions a role can perform.

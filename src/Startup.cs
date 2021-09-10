@@ -1,14 +1,14 @@
 using System;
 using System.Globalization;
 using System.Security.Cryptography;
-using ForSakenBorders.Utilities;
-using ForSakenBorders.Utilities.Config;
+using ForSakenBorders.Backend.Utilities;
+using ForSakenBorders.Backend.Utilities.Config;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
-namespace ForSakenBorders
+namespace ForSakenBorders.Backend
 {
     public class Startup
     {

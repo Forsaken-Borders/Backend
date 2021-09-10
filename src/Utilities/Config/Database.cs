@@ -1,12 +1,12 @@
 using System.Globalization;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using ForSakenBorders.Database;
+using ForSakenBorders.Backend.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 
-namespace ForSakenBorders.Utilities.Config
+namespace ForSakenBorders.Backend.Utilities.Config
 {
     public class Database
     {
@@ -30,7 +30,7 @@ namespace ForSakenBorders.Utilities.Config
 
         public async Task Load(IServiceCollection services)
         {
-            services.AddDbContext<ForSakenBordersContext>(options =>
+            services.AddDbContext<BackendContext>(options =>
             {
                 NpgsqlConnectionStringBuilder connectionBuilder = new();
                 connectionBuilder.ApplicationName = ApplicationName;
@@ -48,7 +48,7 @@ namespace ForSakenBorders.Utilities.Config
             }, ServiceLifetime.Transient);
 
             using IServiceScope scope = services.BuildServiceProvider().CreateScope();
-            ForSakenBordersContext database = scope.ServiceProvider.GetService<ForSakenBordersContext>();
+            BackendContext database = scope.ServiceProvider.GetService<BackendContext>();
             await database.Database.MigrateAsync();
         }
     }
