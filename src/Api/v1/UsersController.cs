@@ -5,19 +5,21 @@ using System.Text;
 using System.Threading.Tasks;
 using ForSakenBorders.Backend.Api.v1.Payloads;
 using ForSakenBorders.Backend.Database;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace ForSakenBorders.Backend.Api.v1
 {
+    [Authorize]
     [ApiController]
-    [Route("/api/v1/users")]
-    public class Users : ControllerBase
+    [Route("/api/v1/[controller]")]
+    public class UsersController : ControllerBase
     {
         private readonly SHA512 _sha512Generator;
         private readonly BackendContext _database;
 
-        public Users(BackendContext forSakenBordersContext, SHA512 sha512Generator)
+        public UsersController(BackendContext forSakenBordersContext, SHA512 sha512Generator)
         {
             _database = forSakenBordersContext;
             _sha512Generator = sha512Generator;
@@ -26,38 +28,15 @@ namespace ForSakenBorders.Backend.Api.v1
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
-            string authorizationToken = Request.Headers["Authorization"];
-            authorizationToken ??= Guid.Empty.ToString();
-            Guid authorization = Guid.Parse(authorizationToken);
-            User user = await _database.Users.FirstOrDefaultAsync(databaseUser => databaseUser.Token == authorization);
-            if (user is null)
-            {
-                return Unauthorized("Invalid authorization token.");
-            }
-
             User requestedUser = await _database.Users.FirstOrDefaultAsync(databaseUser => databaseUser.Id == id);
-            if (requestedUser == null)
-            {
-                return NotFound();
-            }
-            else
-            {
-                return Ok(requestedUser);
-            }
+            return requestedUser == null ? NotFound() : Ok(requestedUser);
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Post(UserPayload userPayload)
         {
-            string authorizationToken = Request.Headers["Authorization"];
-            authorizationToken ??= Guid.Empty.ToString();
-            Guid authorization = Guid.Parse(authorizationToken);
-            User user = await _database.Users.FirstOrDefaultAsync(databaseUser => databaseUser.Token == authorization);
-            if (user is not null && !user.Roles.Any(role => role.NotePermissions.HasFlag(Permissions.Create)))
-            {
-                return Unauthorized("You do not have permission to create accounts.");
-            }
-            else if (userPayload is null)
+            if (userPayload is null)
             {
                 return BadRequest("User payload is null.");
             }
@@ -67,37 +46,29 @@ namespace ForSakenBorders.Backend.Api.v1
             }
             else if (_database.Users.Any(databaseUser => databaseUser.Email == userPayload.Email))
             {
-                return BadRequest("Email is already in use.");
+                return Conflict("Email is already in use.");
             }
             else
             {
                 User newUser = new(userPayload, _sha512Generator);
                 _database.Users.Add(newUser);
                 await _database.SaveChangesAsync();
-                return Created($"/api/v1/users/{newUser.Id}", newUser);
+                return Created($"/api/v1/users/{newUser.Id}", newUser.Token);
             }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            string authorizationToken = Request.Headers["Authorization"];
-            authorizationToken ??= Guid.Empty.ToString();
-            Guid authorization = Guid.Parse(authorizationToken);
-            User user = await _database.Users.FirstOrDefaultAsync(databaseUser => databaseUser.Token == authorization);
-            if (user is null)
-            {
-                return Unauthorized("Invalid authorization token.");
-            }
-
+            User user = await _database.Users.FirstOrDefaultAsync(databaseUser => databaseUser.Token == Guid.Parse(Request.Headers["Authorization"]));
             User requestedUser = await _database.Users.FirstOrDefaultAsync(databaseUser => databaseUser.Id == id);
             if (requestedUser is null)
             {
                 return NotFound();
             }
-            else if (requestedUser.Id != user.Id && !user.Roles.Any(role => role.UserPermissions.HasFlag(Permissions.Delete)))
+            else if (user.Id != requestedUser.Id && !user.Roles.Any(role => role.UserPermissions.HasFlag(Permissions.Delete)))
             {
-                return Unauthorized("You do not have permission to delete this account.");
+                return Unauthorized();
             }
             else
             {
@@ -115,33 +86,26 @@ namespace ForSakenBorders.Backend.Api.v1
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Patch(UserPayload userPayload)
+        public async Task<IActionResult> Put(UserPayload userPayload)
         {
-            string authorizationToken = Request.Headers["Authorization"];
-            authorizationToken ??= Guid.Empty.ToString();
-            Guid authorization = Guid.Parse(authorizationToken);
-            User user = await _database.Users.FirstOrDefaultAsync(databaseUser => databaseUser.Token == authorization);
-            if (user is null)
-            {
-                return Unauthorized("Invalid authorization token.");
-            }
-            else if (userPayload is null)
+            if (userPayload is null)
             {
                 return BadRequest("User Payload is null.");
             }
 
+            User user = await _database.Users.FirstOrDefaultAsync(databaseUser => databaseUser.Token == Guid.Parse(Request.Headers["Authorization"]));
             User requestedUser = await _database.Users.FirstOrDefaultAsync(databaseUser => databaseUser.Id == userPayload.Id);
             if (requestedUser is null)
             {
                 return NotFound();
             }
-            else if (requestedUser.Id != user.Id && !user.Roles.Any(role => role.UserPermissions.HasFlag(Permissions.EditAll)))
-            {
-                return Unauthorized("You do not have permission to update this account.");
-            }
             else if (!userPayload.ValidateEmail())
             {
                 return BadRequest("Email is invalid.");
+            }
+            else if (user.Id != requestedUser.Id && !user.Roles.Any(role => role.UserPermissions.HasFlag(Permissions.EditAll)))
+            {
+                return Unauthorized();
             }
             else
             {

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using ForSakenBorders.Backend.Api.v1.Payloads;
@@ -12,7 +13,10 @@ namespace ForSakenBorders.Backend.Database
     /// </summary>
     public class Note
     {
-        internal Note() { }
+        /// <summary>
+        /// Empty constructor required by EFCore.
+        /// </summary>
+        private Note() { }
 
         /// <summary>
         /// Creates a new note.
@@ -22,13 +26,13 @@ namespace ForSakenBorders.Backend.Database
         /// <param name="sha512Generator">Used for creating the Content and Thumbnail hashes.</param>
         public Note(NotePayload notePayload, User owner, SHA512 sha512Generator)
         {
-            Content = notePayload.Content;
+            Content = notePayload.Content.Split('\n').Aggregate((a, b) => a.Trim() + "\n" + b.Trim());
             ContentHash = sha512Generator.ComputeHash(Encoding.UTF8.GetBytes(notePayload.Content));
             Owner = owner;
             Tags = notePayload.Tags;
             Thumbnail = notePayload.Thumbnail;
             ThumbnailHash = sha512Generator.ComputeHash(notePayload.Thumbnail);
-            Title = notePayload.Title;
+            Title = notePayload.Title.Trim();
         }
 
         /// <summary>

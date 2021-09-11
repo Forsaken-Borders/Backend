@@ -8,7 +8,10 @@ namespace ForSakenBorders.Backend.Database
     /// </summary>
     public class Role
     {
-        internal Role() { }
+        /// <summary>
+        /// Empty constructor required by EFCore.
+        /// </summary>
+        private Role() { }
 
         /// <summary>
         /// The GUID of the role. Shouldn't ever change, and should be unique.

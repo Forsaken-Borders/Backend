@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using ForSakenBorders.Backend.Database;
@@ -47,9 +48,13 @@ namespace ForSakenBorders.Backend.Utilities.Config
 #endif
             }, ServiceLifetime.Transient);
 
+            // Apparently getting the service from the service provider is an anti-pattern? Not sure what to do with it...
             using IServiceScope scope = services.BuildServiceProvider().CreateScope();
             BackendContext database = scope.ServiceProvider.GetService<BackendContext>();
-            await database.Database.MigrateAsync();
+            if ((await database.Database.GetPendingMigrationsAsync()).Any())
+            {
+                await database.Database.MigrateAsync();
+            }
         }
     }
 }

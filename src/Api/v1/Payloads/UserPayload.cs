@@ -14,7 +14,7 @@ namespace ForSakenBorders.Backend.Api.v1.Payloads
         /// <summary>
         /// Optional parameter. Should only be used when editing a user.
         /// </summary>
-        public Guid Id { get; } = Guid.Empty;
+        public Guid Id { get; set; } = Guid.Empty;
 
         /// <summary>
         /// The roles the user has.

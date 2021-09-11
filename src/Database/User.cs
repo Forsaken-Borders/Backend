@@ -13,7 +13,10 @@ namespace ForSakenBorders.Backend.Database
     /// </summary>
     public class User
     {
-        internal User() { }
+        /// <summary>
+        /// Empty constructor required by EFCore.
+        /// </summary>
+        private User() { }
 
         /// <summary>
         /// Creates a new user.
@@ -26,8 +29,8 @@ namespace ForSakenBorders.Backend.Database
             Username = userPayload.Username.Trim();
             Email = userPayload.Email.Trim();
             PasswordHash = sha512Generator.ComputeHash(Encoding.UTF8.GetBytes(userPayload.Password));
-            FirstName = userPayload.FirstName.Trim();
-            LastName = userPayload.LastName.Trim();
+            FirstName = userPayload.FirstName?.Trim() ?? null;
+            LastName = userPayload.LastName?.Trim() ?? null;
             CreatedAt = DateTime.UtcNow;
             Token = Guid.NewGuid();
             TokenExpiration = DateTime.UtcNow.AddDays(1);

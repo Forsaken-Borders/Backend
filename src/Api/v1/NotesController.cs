@@ -11,15 +11,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ForSakenBorders.Backend.Api.v1
 {
-    [Authorize("UserTokenHandler")]
     [ApiController]
-    [Route("/api/v1/notes")]
-    public class Notes : ControllerBase
+    [Route("/api/v1/[controller]")]
+    [Authorize]
+    public class NotesController : ControllerBase
     {
         private readonly SHA512 _sha512Generator;
         private readonly BackendContext _database;
 
-        public Notes(BackendContext forSakenBordersContext, SHA512 sha512Generator)
+        public NotesController(BackendContext forSakenBordersContext, SHA512 sha512Generator)
         {
             _database = forSakenBordersContext;
             _sha512Generator = sha512Generator;
@@ -28,40 +28,28 @@ namespace ForSakenBorders.Backend.Api.v1
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
-            string authorizationToken = Request.Headers["Authorization"];
-            Guid authorization = Guid.Parse(authorizationToken);
-            User user = await _database.Users.FirstOrDefaultAsync(databaseUser => databaseUser.Token == authorization);
-            if (user is null)
-            {
-                return Unauthorized("Invalid authorization token.");
-            }
-
+            Guid userToken = Guid.Parse(Request.Headers["Authorization"]);
+            User user = await _database.Users.FirstOrDefaultAsync(databaseUser => databaseUser.Token == userToken);
             Note note = await _database.Notes.FirstOrDefaultAsync(databaseNote => databaseNote.Id == id);
             if (note is null)
             {
                 return NotFound();
             }
-            else if (note.Owner.Token != authorization && !user.Roles.Any(role => role.NotePermissions.HasFlag(Permissions.ViewAll)))
+            else if (note.Owner.Token != userToken && !user.Roles.Any(role => role.NotePermissions.HasFlag(Permissions.ViewAll)))
             {
-                return Unauthorized("Not the owner of the note and missing the \"ViewAll\" permission.");
+                return Unauthorized();
             }
 
             return _sha512Generator.ComputeHash(Encoding.UTF8.GetBytes(note.Content)) != note.ContentHash && Request.Headers["Expect"] != "100-continue"
-                ? StatusCode(500, "The note's content does not rehash to the note's hash. This means the content is highly likely to have been modified without the use of the API, and it could be dangerous to open up the note. To retrieve the contents regardless, pass the \"Expect: 100-continue\" header.")
+                ? StatusCode(409, "The note's content does not rehash to the note's hash. This means the content is highly likely to have been modified without the use of the API, and it could be dangerous to open up the note. To retrieve the contents regardless, pass the \"Expect: 100-continue\" header.")
                 : Ok(note);
         }
 
         [HttpPost]
         public async Task<IActionResult> Post(NotePayload notePayload)
         {
-            string authorizationToken = Request.Headers["Authorization"];
-            Guid authorization = Guid.Parse(authorizationToken);
-            User user = await _database.Users.FirstOrDefaultAsync(databaseUser => databaseUser.Token == authorization);
-            if (user is null)
-            {
-                return Unauthorized("Invalid authorization token.");
-            }
-            else if (!user.Roles.Any(role => role.NotePermissions.HasFlag(Permissions.Create)))
+            User user = await _database.Users.FirstOrDefaultAsync(databaseUser => databaseUser.Token == Request.Headers["Authorization"]);
+            if (!user.Roles.Any(role => role.NotePermissions.HasFlag(Permissions.Create)))
             {
                 return Unauthorized("You do not have permission to create notes.");
             }
@@ -81,14 +69,7 @@ namespace ForSakenBorders.Backend.Api.v1
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            string authorizationToken = Request.Headers["Authorization"];
-            Guid authorization = Guid.Parse(authorizationToken);
-            User user = await _database.Users.FirstOrDefaultAsync(databaseUser => databaseUser.Token == authorization);
-            if (user is null)
-            {
-                return Unauthorized("Invalid authorization token.");
-            }
-
+            User user = await _database.Users.FirstOrDefaultAsync(databaseUser => databaseUser.Token == Request.Headers["Authorization"]);
             Note note = await _database.Notes.FirstOrDefaultAsync(databaseNote => databaseNote.Id == id);
             if (note is null)
             {
@@ -97,7 +78,7 @@ namespace ForSakenBorders.Backend.Api.v1
 
             // Case 1: The user is not the owner of the note and does not have permission to delete
             // Case 2: The user is the owner of the note and has permission to edit it.
-            if ((user.Id != note.Owner.Id && !user.Roles.Any(role => role.NotePermissions.HasFlag(Permissions.Delete))) || (user.Id == note.Owner.Id && !user.Roles.Any(role => role.NotePermissions.HasFlag(Permissions.EditOwn))))
+            if (user.Id != note.Owner.Id && !user.Roles.Any(role => role.NotePermissions.HasFlag(Permissions.Delete)))
             {
                 return Unauthorized("You do not have permission to delete this note.");
             }
@@ -112,14 +93,8 @@ namespace ForSakenBorders.Backend.Api.v1
         [HttpPut("{id}")]
         public async Task<IActionResult> Patch(NotePayload newNote)
         {
-            string authorizationToken = Request.Headers["Authorization"];
-            Guid authorization = Guid.Parse(authorizationToken);
-            User user = await _database.Users.FirstOrDefaultAsync(databaseUser => databaseUser.Token == authorization);
-            if (user is null)
-            {
-                return Unauthorized("Invalid authorization token.");
-            }
-            else if (newNote is null)
+            User user = await _database.Users.FirstOrDefaultAsync(databaseUser => databaseUser.Token == Request.Headers["Authorization"]);
+            if (newNote is null)
             {
                 return BadRequest("Note is null.");
             }
@@ -133,7 +108,7 @@ namespace ForSakenBorders.Backend.Api.v1
             {
                 return NotFound();
             }
-            else if ((user.Id != note.Owner.Id && !user.Roles.Any(role => role.NotePermissions.HasFlag(Permissions.EditAll))) || (user.Id == note.Owner.Id && !user.Roles.Any(role => role.NotePermissions.HasFlag(Permissions.EditOwn))))
+            else if (user.Id != note.Owner.Id && !user.Roles.Any(role => role.NotePermissions.HasFlag(Permissions.EditAll)))
             {
                 return Unauthorized("You do not have permission to edit this note.");
             }
