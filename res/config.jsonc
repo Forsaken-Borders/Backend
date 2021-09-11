@@ -1,10 +1,10 @@
 {
     "database": {
-        "application_name": "Kiki",
-        "database_name": "kiki",
+        "application_name": "ForSakenBorders_Backend",
+        "database_name": "forsaken_borders",
         "host": "example.com",
         "port": 5432,
-        "username": "kiki",
+        "username": "forsaken_borders",
         "password": "redacted"
     }
 }

@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ForSakenBorders.Backend.Migrations
 {
     [DbContext(typeof(BackendContext))]
-    [Migration("20210910005806_TokenExpirationToDateTimeAndTokenToGuid")]
-    partial class TokenExpirationToDateTimeAndTokenToGuid
+    [Migration("20210911062108_TokenLogs")]
+    partial class TokenLogs
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -21,6 +21,19 @@ namespace ForSakenBorders.Backend.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("ProductVersion", "5.0.9")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+            modelBuilder.Entity("ForSakenBorders.Backend.Database.Log", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_logs");
+
+                    b.ToTable("logs");
+                });
 
             modelBuilder.Entity("ForSakenBorders.Backend.Database.Note", b =>
                 {

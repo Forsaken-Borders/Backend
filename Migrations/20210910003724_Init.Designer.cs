@@ -22,7 +22,7 @@ namespace ForSakenBorders.Backend.Migrations
                 .HasAnnotation("ProductVersion", "5.0.9")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-            modelBuilder.Entity("Kiki.Database.Note", b =>
+            modelBuilder.Entity("ForSakenBorders.Backend.Database.Note", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -75,7 +75,7 @@ namespace ForSakenBorders.Backend.Migrations
                     b.ToTable("notes");
                 });
 
-            modelBuilder.Entity("Kiki.Database.Role", b =>
+            modelBuilder.Entity("ForSakenBorders.Backend.Database.Role", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -123,7 +123,7 @@ namespace ForSakenBorders.Backend.Migrations
                     b.ToTable("roles");
                 });
 
-            modelBuilder.Entity("Kiki.Database.User", b =>
+            modelBuilder.Entity("ForSakenBorders.Backend.Database.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -196,9 +196,9 @@ namespace ForSakenBorders.Backend.Migrations
                     b.ToTable("users");
                 });
 
-            modelBuilder.Entity("Kiki.Database.Note", b =>
+            modelBuilder.Entity("ForSakenBorders.Backend.Database.Note", b =>
                 {
-                    b.HasOne("Kiki.Database.User", "Owner")
+                    b.HasOne("ForSakenBorders.Backend.Database.User", "Owner")
                         .WithMany()
                         .HasForeignKey("OwnerId")
                         .HasConstraintName("fk_notes_users_owner_id");
@@ -206,15 +206,15 @@ namespace ForSakenBorders.Backend.Migrations
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("Kiki.Database.Role", b =>
+            modelBuilder.Entity("ForSakenBorders.Backend.Database.Role", b =>
                 {
-                    b.HasOne("Kiki.Database.User", null)
+                    b.HasOne("ForSakenBorders.Backend.Database.User", null)
                         .WithMany("Roles")
                         .HasForeignKey("UserId")
                         .HasConstraintName("fk_roles_users_user_id");
                 });
 
-            modelBuilder.Entity("Kiki.Database.User", b =>
+            modelBuilder.Entity("ForSakenBorders.Backend.Database.User", b =>
                 {
                     b.Navigation("Roles");
                 });
