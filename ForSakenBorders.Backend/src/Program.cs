@@ -1,17 +1,20 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-
-namespace ForSakenBorders.Backend
+﻿namespace ForSakenBorders.Backend
 {
     public class Program
     {
-        // TODO: Command line arguments
         public static void Main(string[] args) => CreateHostBuilder(args).Build().Run();
 
         public static IHostBuilder CreateHostBuilder(string[] args) => Host
             .CreateDefaultBuilder(args)
             .ConfigureLogging(logging => logging.ClearProviders())
+            .ConfigureAppConfiguration((hostingContext, config) =>
+            {
+                config.Sources.Clear();
+                config.AddJsonFile("res/config.jsonc.prod", optional: true, reloadOnChange: true);
+                config.AddCommandLine(args);
+                config.AddEnvironmentVariables("FORSAKENBORDERS_");
+                config.Build();
+            })
             .ConfigureWebHostDefaults(webBuilder =>
             {
                 webBuilder.UseStartup<Startup>();

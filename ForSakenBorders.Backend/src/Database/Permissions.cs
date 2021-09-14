@@ -1,5 +1,3 @@
-using System;
-
 namespace ForSakenBorders.Backend.Database
 {
     /// <summary>

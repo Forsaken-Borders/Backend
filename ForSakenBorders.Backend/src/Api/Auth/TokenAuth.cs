@@ -1,12 +1,8 @@
-using System;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 using ForSakenBorders.Backend.Database;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace ForSakenBorders.Backend.Api.Auth
@@ -40,7 +36,7 @@ namespace ForSakenBorders.Backend.Api.Auth
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             string authorizationToken = Request.Headers["Authorization"];
-            if (string.IsNullOrEmpty(authorizationToken.Trim()))
+            if (string.IsNullOrEmpty(authorizationToken?.Trim()))
             {
                 return AuthenticateResult.Fail("Missing token.");
             }
@@ -59,18 +55,16 @@ namespace ForSakenBorders.Backend.Api.Auth
             {
                 return AuthenticateResult.Fail("Expired token.");
             }
-            else
-            {
-                Log log = new(authorization, CurrentUri, Request.Headers["User-Agent"]);
-                _context.Logs.Add(log);
-                await _context.SaveChangesAsync();
 
-                Claim[] claims = new[] { new Claim(ClaimTypes.Name, "TokenAuthentication") };
-                ClaimsIdentity identity = new(claims, Scheme.Name);
-                ClaimsPrincipal principal = new(identity);
-                AuthenticationTicket ticket = new(principal, Scheme.Name);
-                return AuthenticateResult.Success(ticket);
-            }
+            Log log = new(authorization, CurrentUri, Request.Headers["User-Agent"]);
+            _context.Logs.Add(log);
+            await _context.SaveChangesAsync();
+
+            Claim[] claims = new[] { new Claim(ClaimTypes.Name, "TokenAuthentication") };
+            ClaimsIdentity identity = new(claims, Scheme.Name);
+            ClaimsPrincipal principal = new(identity);
+            AuthenticationTicket ticket = new(principal, Scheme.Name);
+            return AuthenticateResult.Success(ticket);
         }
     }
 }

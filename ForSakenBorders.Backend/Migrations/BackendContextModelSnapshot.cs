@@ -155,8 +155,8 @@ namespace ForSakenBorders.Backend.Migrations
                         .HasColumnName("email");
 
                     b.Property<string>("FirstName")
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
                         .HasColumnName("first_name");
 
                     b.Property<bool>("IsBanned")
@@ -172,8 +172,8 @@ namespace ForSakenBorders.Backend.Migrations
                         .HasColumnName("is_verified");
 
                     b.Property<string>("LastName")
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
                         .HasColumnName("last_name");
 
                     b.Property<byte[]>("PasswordHash")
@@ -193,8 +193,8 @@ namespace ForSakenBorders.Backend.Migrations
                         .HasColumnName("updated_at");
 
                     b.Property<string>("Username")
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
                         .HasColumnName("username");
 
                     b.HasKey("Id")

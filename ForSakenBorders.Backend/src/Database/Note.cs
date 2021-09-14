@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using ForSakenBorders.Backend.Api.v1.Payloads;
@@ -69,7 +66,7 @@ namespace ForSakenBorders.Backend.Database
         /// A bunch of tags that can be used to categorize the note.
         /// </summary>
         [MaxLength(10)]
-        public List<string> Tags { get; set; } = new();
+        public List<string> Tags { get; set; } = new List<string>();
 
         /// <summary>
         /// The date the note was created.

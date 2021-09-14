@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace ForSakenBorders.Backend.Database
@@ -6,11 +5,11 @@ namespace ForSakenBorders.Backend.Database
     public class Log
     {
         [Key]
-        public Guid Id { get; }
-        public Guid Token { get; }
-        public string Endpoint { get; }
-        public string UserAgent { get; }
-        public DateTime DateTime { get; } = DateTime.UtcNow;
+        public Guid Id { get; set; }
+        public Guid Token { get; set; }
+        public string Endpoint { get; set; }
+        public string UserAgent { get; set; }
+        public DateTime DateTime { get; set; } = DateTime.UtcNow;
 
         /// <summary>
         /// Empty constructor required by EFCore.

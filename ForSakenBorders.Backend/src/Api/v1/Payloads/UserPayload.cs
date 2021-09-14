@@ -1,7 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using ForSakenBorders.Backend.Database;
 
 namespace ForSakenBorders.Backend.Api.v1.Payloads
@@ -11,10 +10,7 @@ namespace ForSakenBorders.Backend.Api.v1.Payloads
     /// </summary>
     public class UserPayload
     {
-        /// <summary>
-        /// Optional parameter. Should only be used when editing a user.
-        /// </summary>
-        public Guid Id { get; set; } = Guid.Empty;
+        private SHA512 _sHA512Generator = SHA512.Create();
 
         /// <summary>
         /// The roles the user has.
@@ -43,14 +39,44 @@ namespace ForSakenBorders.Backend.Api.v1.Payloads
         /// <summary>
         /// The user's preferred first name.
         /// </summary>
-        [StringLength(32, MinimumLength = 3)]
+        [StringLength(32)]
         public string FirstName { get; set; }
 
         /// <summary>
         /// The user's preferred last name.
         /// </summary>
-        [StringLength(32, MinimumLength = 3)]
+        [StringLength(32)]
         public string LastName { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is UserPayload payload)
+            {
+                return payload.Email == Email
+                    && EqualityComparer<List<Role>>.Default.Equals(Roles, payload.Roles)
+                    && payload.Password == Password
+                    && payload.Username == Username
+                    && payload.FirstName == FirstName
+                    && payload.LastName == LastName;
+            }
+            else if (obj is User user)
+            {
+                _sHA512Generator ??= SHA512.Create();
+                return user.Email == Email
+                    && user.Roles.SequenceEqual(Roles)
+                    && user.PasswordHash.SequenceEqual(_sHA512Generator.ComputeHash(Encoding.UTF8.GetBytes(Password)))
+                    && user.Username == Username
+                    && user.FirstName == FirstName
+                    && user.LastName == LastName;
+            }
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Roles, Email, Password, Username, FirstName, LastName);
+        }
 
         /// <summary>
         /// Roughly validates the user's email. Does not completely abide by the RFC 3696 standard.

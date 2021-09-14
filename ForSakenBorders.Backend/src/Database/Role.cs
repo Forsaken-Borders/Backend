@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace ForSakenBorders.Backend.Database
@@ -53,5 +52,23 @@ namespace ForSakenBorders.Backend.Database
         /// Determines what actions those with the role can perform on notes.
         /// </summary>
         public Permissions NotePermissions { get; set; } = Permissions.EditOwn | Permissions.ViewOwn;
+
+        public override bool Equals(object obj)
+        {
+            return obj is Role role
+                   && Id.Equals(role.Id)
+                   && Name == role.Name
+                   && Description == role.Description
+                   && IsOfficial == role.IsOfficial
+                   && EqualityComparer<byte[]>.Default.Equals(Icon, role.Icon)
+                   && Position == role.Position
+                   && UserPermissions == role.UserPermissions
+                   && NotePermissions == role.NotePermissions;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Id, Name, Description, IsOfficial, Icon, Position, UserPermissions, NotePermissions);
+        }
     }
 }

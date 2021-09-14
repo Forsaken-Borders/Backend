@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ForSakenBorders.Backend.Database
 {
@@ -18,6 +19,16 @@ namespace ForSakenBorders.Backend.Database
             modelBuilder.Entity<Note>().HasKey(note => note.Id);
             modelBuilder.Entity<Role>().HasKey(role => role.Id);
             modelBuilder.Entity<Log>().HasKey(log => log.Id);
+
+            if (Startup.Configuration.GetValue<bool>("dev"))
+            {
+                ValueConverter<List<string>, string> stringValueConverter = new(
+                    value => string.Join(",", value),
+                    value => new List<string>(value.Split(',', System.StringSplitOptions.RemoveEmptyEntries))
+                );
+
+                modelBuilder.Entity<Note>().Property(note => note.Tags).HasConversion(stringValueConverter);
+            }
         }
     }
 }
