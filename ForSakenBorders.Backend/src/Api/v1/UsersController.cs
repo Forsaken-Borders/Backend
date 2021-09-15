@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ForSakenBorders.Backend.Api.v1.Payloads;
 using ForSakenBorders.Backend.Database;
+using ForSakenBorders.Backend.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -53,7 +54,7 @@ namespace ForSakenBorders.Backend.Api.v1
             {
                 return BadRequest("User payload is null.");
             }
-            else if (!userPayload.ValidateEmail())
+            else if (!userPayload.Email.ValidateEmail())
             {
                 return BadRequest("email is invalid.");
             }
@@ -128,7 +129,7 @@ namespace ForSakenBorders.Backend.Api.v1
             {
                 return NotFound();
             }
-            else if (!userPayload.ValidateEmail())
+            else if (!userPayload.Email.ValidateEmail())
             {
                 return BadRequest("email is invalid.");
             }
@@ -168,6 +169,64 @@ namespace ForSakenBorders.Backend.Api.v1
             requestedUser.FirstName = userPayload.FirstName;
             requestedUser.LastName = userPayload.LastName;
             await _database.SaveChangesAsync();
+            return Ok();
+        }
+
+        [AllowAnonymous]
+        [HttpPost("login")]
+        public async Task<IActionResult> Post(LoginPayload loginPayload)
+        {
+            if (loginPayload is null)
+            {
+                return BadRequest("Login payload is null.");
+            }
+            else if (!loginPayload.Email.ValidateEmail())
+            {
+                return BadRequest("email is invalid.");
+            }
+            else if (loginPayload.TokenExpiration != DateTime.MinValue && loginPayload.TokenExpiration < DateTime.UtcNow)
+            {
+                return BadRequest("token_expiration is in the past.");
+            }
+
+            User user = _database.Users.FirstOrDefault(databaseUser => databaseUser.Email == loginPayload.Email);
+            if (user is null)
+            {
+                return NotFound("Unknown email.");
+            }
+            else if (!_sha512Generator.ComputeHash(Encoding.UTF8.GetBytes(loginPayload.Password)).SequenceEqual(user.PasswordHash))
+            {
+                return Unauthorized("Invalid password.");
+            }
+            else if (user.IsDeleted)
+            {
+                return StatusCode(410, "User is deleted.");
+            }
+
+            user.Token = Guid.NewGuid();
+            user.TokenExpiration = loginPayload.TokenExpiration;
+            await _database.SaveChangesAsync();
+            return Ok(user.Token);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("forgot")]
+        public IActionResult Post(string emailAddress)
+        {
+            if (emailAddress is null)
+            {
+                return BadRequest("Email address is null.");
+            }
+            else if (!emailAddress.ValidateEmail())
+            {
+                return BadRequest("Email address is invalid.");
+            }
+            else if (!_database.Users.Any(databaseUser => databaseUser.Email == emailAddress))
+            {
+                return NotFound("Unknown email.");
+            }
+
+            // TODO: Connect to an email server and send the reset password link.
             return Ok();
         }
     }
