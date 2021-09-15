@@ -1,6 +1,10 @@
+using System;
+using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
+using System.Threading.Tasks;
 using ForSakenBorders.Backend.Api.v1.Payloads;
 using Xunit;
 
@@ -14,7 +18,7 @@ namespace ForSakenBorders.Backend.Tests.Api.v1
         public UsersControllerTest()
         {
             _client.BaseAddress = new(new("http://localhost:5000/"));
-            if (!hasRan) // The constructor is called everytime a new test is ran. I'd rather wait 3 seconds instead of some 21
+            if (!hasRan) // The constructor is called everytime a new test is ran. I'd rather wait 3 seconds instead of 21+
             {
                 Environment.CurrentDirectory = "../../../../ForSakenBorders.Backend/";
                 Task.Run(() => Program.Main(new[] { "--dev=true", "--logging:disabled=true" }));

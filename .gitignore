@@ -4,3 +4,4 @@ logs/
 res/config.jsonc.prod
 .vscode/
 .obsidian/
+dev.db
