@@ -26,19 +26,23 @@ namespace ForSakenBorders.Backend.Api
         public IActionResult Handle()
         {
             Exception exception = HttpContext.Features.Get<IExceptionHandlerFeature>()?.Error;
-            Log log = new();
-            log.Endpoint = HttpContext.Request.Path;
-            if (Guid.TryParse(HttpContext.Request.Headers["Authorization"], out Guid userToken))
+            if (exception is not null)
             {
-                log.Token = userToken;
-            }
+                Log log = new();
+                log.Endpoint = HttpContext.Request.Path;
+                if (Guid.TryParse(HttpContext.Request.Headers["Authorization"], out Guid userToken))
+                {
+                    log.Token = userToken;
+                }
 
-            if (HttpContext.Request.Headers.TryGetValue("User-Agent", out var userAgent))
-            {
-                log.UserAgent = userAgent;
+                if (HttpContext.Request.Headers.TryGetValue("User-Agent", out var userAgent))
+                {
+                    log.UserAgent = userAgent;
+                }
+                log.Exception = exception;
+                _database.Logs.Add(log);
+                _database.SaveChanges();
             }
-            log.Exception = exception;
-            _database.Logs.Add(log);
 
             Request.HttpContext.Response.Headers["X-Error"] = "true";
             return StatusCode(500, "An internal server error occured. Please try again later, or try with different options.");
