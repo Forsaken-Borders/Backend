@@ -77,21 +77,14 @@ namespace ForSakenBorders.Backend
             {
                 // Wipe the database if it exists.
                 database.Database.EnsureDeleted();
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseExceptionHandler("/api/error");
+                app.UseStatusCodePages("text/plain", "Status code page, status code: {0}");
             }
             database.Database.EnsureCreated();
-
-            //if (database.Database.GetMigrations().Any())
-            //{
-            //    try
-            //    {
-            //        database.Database.Migrate();
-            //    }
-            //    catch (Exception)
-            //    {
-            //        // Ignore
-            //    }
-            //}
-
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();

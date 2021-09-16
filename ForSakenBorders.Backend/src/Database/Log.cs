@@ -11,6 +11,7 @@ namespace ForSakenBorders.Backend.Database
         public string Endpoint { get; set; }
         public string UserAgent { get; set; }
         public DateTime DateTime { get; set; } = DateTime.UtcNow;
+        public Exception Exception { get; set; }
 
         /// <summary>
         /// Empty constructor required by EFCore.

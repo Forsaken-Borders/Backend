@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Extensions.Configuration;
@@ -16,20 +18,26 @@ namespace ForSakenBorders.Backend.Database
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            ValueConverter<List<string>, string> stringListValueConverter = new(
+                value => string.Join(",", value),
+                value => new List<string>(value.Split(',', StringSplitOptions.RemoveEmptyEntries))
+            );
+
+            ValueConverter<Exception, string> exceptionValueConverter = new(
+                value => JsonSerializer.Serialize(value, new JsonSerializerOptions()),
+                value => JsonSerializer.Deserialize<Exception>(value, new JsonSerializerOptions())
+            );
+
             modelBuilder.Entity<User>().HasIndex(user => user.Email).IsUnique();
             modelBuilder.Entity<User>().HasKey(user => user.Id);
             modelBuilder.Entity<Note>().HasKey(note => note.Id);
             modelBuilder.Entity<Role>().HasKey(role => role.Id);
             modelBuilder.Entity<Log>().HasKey(log => log.Id);
+            modelBuilder.Entity<Log>().Property(log => log.Exception).HasConversion(exceptionValueConverter);
 
             if (Startup.Configuration.GetValue<bool>("dev"))
             {
-                ValueConverter<List<string>, string> stringValueConverter = new(
-                    value => string.Join(",", value),
-                    value => new List<string>(value.Split(',', System.StringSplitOptions.RemoveEmptyEntries))
-                );
-
-                modelBuilder.Entity<Note>().Property(note => note.Tags).HasConversion(stringValueConverter);
+                modelBuilder.Entity<Note>().Property(note => note.Tags).HasConversion(stringListValueConverter);
             }
         }
     }

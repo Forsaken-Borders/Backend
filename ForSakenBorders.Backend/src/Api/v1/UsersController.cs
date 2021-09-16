@@ -1,13 +1,18 @@
 using System;
 using System.Linq;
+using System.Net;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using ForSakenBorders.Backend.Api.v1.Payloads;
 using ForSakenBorders.Backend.Database;
 using ForSakenBorders.Backend.Utilities;
+using MailKit.Net.Smtp;
+using MailKit.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using MimeKit;
 
 namespace ForSakenBorders.Backend.Api.v1
 {
@@ -17,10 +22,12 @@ namespace ForSakenBorders.Backend.Api.v1
     public class UsersController : ControllerBase
     {
         private readonly BackendContext _database;
+        private readonly IConfiguration _configuration;
 
-        public UsersController(BackendContext forSakenBordersContext)
+        public UsersController(BackendContext forSakenBordersContext, IConfiguration configuration)
         {
             _database = forSakenBordersContext;
+            _configuration = configuration;
         }
 
         [HttpGet("{requestedUserId}")]
@@ -218,13 +225,89 @@ namespace ForSakenBorders.Backend.Api.v1
             {
                 return BadRequest("Email address is invalid.");
             }
-            else if (!_database.Users.Any(databaseUser => databaseUser.Email == emailAddress))
+
+            User user = _database.Users.FirstOrDefault(databaseUser => databaseUser.Email == emailAddress);
+            if (user == null)
             {
                 return NotFound("Unknown email.");
             }
+            else if (user.IsDeleted)
+            {
+                return StatusCode(410, "User is deleted. Please contact support if you wish to restore your account.");
+            }
+            user.RecoveryToken = Guid.NewGuid();
+            user.RecoveryTokenExpiration = DateTime.UtcNow.AddMinutes(30);
+            _database.SaveChanges();
 
-            // TODO: Connect to an email server and send the reset password link.
+            SmtpClient client = new();
+            client.Connect(_configuration["email:host"], _configuration.GetValue<int>("email:port"), SecureSocketOptions.StartTlsWhenAvailable);
+            client.Authenticate(_configuration["email:noreply_address"], _configuration["email:password"]);
+
+            MimeMessage message = new(emailAddress, "Reset your password", $@"
+                <p>
+                    Hello,
+                </p>
+                <p>
+                    We recently recieved a request to reset your password. Click the link below to reset your password.
+                    <a href=""https://{_configuration["domain_name"]}/users/reset/{user.RecoveryToken}"">
+                        Reset your password
+                    </a>
+                </p>
+                <p>
+                    If you did not request a password reset, please ignore this email.
+                </p>
+                <p>
+                    Thanks,<br>
+                    {_configuration["email:noreply_name"]}
+                </p>
+            ");
+            client.Send(message);
+
             return Ok();
+        }
+
+        [AllowAnonymous]
+        [HttpPost("reset/{recoveryToken}")]
+        public IActionResult Post(Guid recoveryToken, string password)
+        {
+            if (recoveryToken == Guid.Empty)
+            {
+                return BadRequest("Recovery token is null.");
+            }
+            else if (password is null)
+            {
+                return BadRequest("Password is null.");
+            }
+            else if (password.Length < 8)
+            {
+                return BadRequest("Password must be more than 8 characters.");
+            }
+            else if (password.Length > 72)
+            {
+                return BadRequest("Password must be less than 72 characters.");
+            }
+
+            User user = _database.Users.FirstOrDefault(databaseUser => databaseUser.RecoveryToken == recoveryToken);
+            if (user is null)
+            {
+                return NotFound("Unknown recovery token.");
+            }
+            else if (user.RecoveryTokenExpiration < DateTime.UtcNow)
+            {
+                return BadRequest("Recovery token has expired.");
+            }
+            else if (user.IsDeleted)
+            {
+                return StatusCode(410, "User is deleted. Please contact support if you wish to restore your account.");
+            }
+
+            user.PasswordSalt = RandomNumberGenerator.GetBytes(1024);
+            user.PasswordHash = password.Argon2idHash(user.PasswordSalt);
+            user.RecoveryToken = Guid.Empty;
+            user.RecoveryTokenExpiration = DateTime.MinValue;
+            _database.SaveChanges();
+
+            return StatusCode(204, "Password reset.");
         }
     }
 }

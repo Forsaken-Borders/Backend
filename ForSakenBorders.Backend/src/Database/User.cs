@@ -134,26 +134,18 @@ namespace ForSakenBorders.Backend.Database
         [StringLength(64)]
         public string LastName { get; set; }
 
-        public override bool Equals(object obj)
-        {
-            return obj is User user
-                && Id.Equals(user.Id)
-                && BanExpiration == user.BanExpiration
-                && CreatedAt == user.CreatedAt
-                && UpdatedAt == user.UpdatedAt
-                && IsBanned == user.IsBanned
-                && IsDeleted == user.IsDeleted
-                && IsVerified == user.IsVerified
-                && EqualityComparer<List<Role>>.Default.Equals(Roles, user.Roles)
-                && BanReason == user.BanReason
-                && Email == user.Email
-                && EqualityComparer<byte[]>.Default.Equals(PasswordHash, user.PasswordHash)
-                && Token.Equals(user.Token)
-                && TokenExpiration == user.TokenExpiration
-                && Username == user.Username
-                && FirstName == user.FirstName
-                && LastName == user.LastName;
-        }
+        /// <summary>
+        /// Set only when a recovery token is generated.
+        /// </summary>
+        /// <value></value>
+        public Guid RecoveryToken { get; set; }
+
+        /// <summary>
+        /// Set only when a recovery token is generated. Expires in 30 minutes.
+        /// </summary>
+        public DateTime RecoveryTokenExpiration { get; set; }
+
+        public override bool Equals(object obj) => obj is User user && Id.Equals(user.Id);
 
         public override int GetHashCode()
         {
