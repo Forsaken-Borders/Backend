@@ -179,6 +179,23 @@ namespace ForSakenBorders.Backend.Tests.Api.v1
             response = await _client.PostAsJsonAsync("/api/v1/users", userPayload);
             Assert.True(HttpStatusCode.Conflict == response.StatusCode, $"/api/v1/users/ did not return 409 Conflict. Instead it threw: {(int)response.StatusCode} {response.StatusCode}, {await response.Content.ReadAsStringAsync()}");
         }
+
+        [Fact]
+        public async Task Post_ValidLogin()
+        {
+            UserPayload userPayload = CreateExampleUser("Post_ValidLogin@example.com");
+
+            HttpResponseMessage response = await _client.PostAsJsonAsync("/api/v1/users", userPayload);
+            Assert.True(HttpStatusCode.Created == response.StatusCode, $"/api/v1/users/ did not return 201 Created. Instead it threw: {(int)response.StatusCode} {response.StatusCode}, {await response.Content.ReadAsStringAsync()}");
+
+            LoginPayload loginPayload = new()
+            {
+                Email = userPayload.Email,
+                Password = userPayload.Password
+            };
+            response = await _client.PostAsJsonAsync("/api/v1/users/login", loginPayload);
+            Assert.True(HttpStatusCode.OK == response.StatusCode, $"/api/v1/users/ did not return 200 OK. Instead it threw: {(int)response.StatusCode} {response.StatusCode}, {await response.Content.ReadAsStringAsync()}");
+        }
         #endregion PostMethods
 
         #region PutMethods

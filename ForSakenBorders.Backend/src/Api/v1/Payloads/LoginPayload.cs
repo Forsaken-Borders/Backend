@@ -1,6 +1,5 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 
 namespace ForSakenBorders.Backend.Api.v1.Payloads
 {
@@ -8,12 +7,12 @@ namespace ForSakenBorders.Backend.Api.v1.Payloads
     {
         [Required]
         [MaxLength(320)]
-        public string Email;
+        public string Email { get; set; }
 
         [Required]
         [StringLength(72, MinimumLength = 8)]
-        public string Password;
+        public string Password { get; set; }
 
-        public DateTime TokenExpiration = DateTime.UtcNow.AddDays(7);
+        public DateTime TokenExpiration { get; set; } = DateTime.UtcNow.AddDays(7);
     }
 }

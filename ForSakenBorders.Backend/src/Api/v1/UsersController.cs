@@ -1,8 +1,6 @@
 using System;
 using System.Linq;
-using System.Net;
 using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 using ForSakenBorders.Backend.Api.v1.Payloads;
 using ForSakenBorders.Backend.Database;
@@ -18,13 +16,11 @@ namespace ForSakenBorders.Backend.Api.v1
     [Route("/api/v1/[controller]")]
     public class UsersController : ControllerBase
     {
-        private readonly SHA512 _sha512Generator;
         private readonly BackendContext _database;
 
-        public UsersController(BackendContext forSakenBordersContext, SHA512 sha512Generator)
+        public UsersController(BackendContext forSakenBordersContext)
         {
             _database = forSakenBordersContext;
-            _sha512Generator = sha512Generator;
         }
 
         [HttpGet("{requestedUserId}")]
@@ -79,7 +75,7 @@ namespace ForSakenBorders.Backend.Api.v1
                 return Conflict("email is already in use.");
             }
 
-            User newUser = new(userPayload, _sha512Generator);
+            User newUser = new(userPayload);
             _database.Users.Add(newUser);
             await _database.SaveChangesAsync();
             return Created($"/api/v1/users/{newUser.Id}", newUser.Token);
@@ -163,7 +159,8 @@ namespace ForSakenBorders.Backend.Api.v1
             }
 
             requestedUser.Email = userPayload.Email;
-            requestedUser.PasswordHash = _sha512Generator.ComputeHash(Encoding.UTF8.GetBytes(userPayload.Password));
+            requestedUser.PasswordSalt = RandomNumberGenerator.GetBytes(1024);
+            requestedUser.PasswordHash = userPayload.Password.Argon2idHash(requestedUser.PasswordSalt);
             requestedUser.Username = userPayload.Username;
             requestedUser.Roles = userPayload.Roles ?? new();
             requestedUser.FirstName = userPayload.FirstName;
@@ -174,7 +171,7 @@ namespace ForSakenBorders.Backend.Api.v1
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<IActionResult> Post(LoginPayload loginPayload)
+        public async Task<IActionResult> Login(LoginPayload loginPayload)
         {
             if (loginPayload is null)
             {
@@ -194,7 +191,7 @@ namespace ForSakenBorders.Backend.Api.v1
             {
                 return NotFound("Unknown email.");
             }
-            else if (!_sha512Generator.ComputeHash(Encoding.UTF8.GetBytes(loginPayload.Password)).SequenceEqual(user.PasswordHash))
+            else if (!loginPayload.Password.Argon2idHash(user.PasswordSalt).SequenceEqual(user.PasswordHash))
             {
                 return Unauthorized("Invalid password.");
             }

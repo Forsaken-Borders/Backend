@@ -24,16 +24,16 @@ namespace ForSakenBorders.Backend.Database
         /// <param name="notePayload">Retrieved from the API. See <see cref="NotePayload"/>.</param>
         /// <param name="owner">Who created the note.</param>
         /// <param name="sha512Generator">Used for creating the Content and Thumbnail hashes.</param>
-        public Note(NotePayload notePayload, User owner, SHA512 sha512Generator)
-        {
-            Content = notePayload.Content.Split('\n').Aggregate((a, b) => a.Trim() + "\n" + b.Trim());
-            ContentHash = sha512Generator.ComputeHash(Encoding.UTF8.GetBytes(notePayload.Content));
-            Owner = owner;
-            Tags = notePayload.Tags;
-            Thumbnail = notePayload.Thumbnail;
-            ThumbnailHash = sha512Generator.ComputeHash(notePayload.Thumbnail);
-            Title = notePayload.Title.Trim();
-        }
+        //public Note(NotePayload notePayload, User owner, SHA512 sha512Generator)
+        //{
+        //    Content = notePayload.Content.Split('\n').Aggregate((a, b) => a.Trim() + "\n" + b.Trim());
+        //    ContentHash = sha512Generator.ComputeHash(Encoding.UTF8.GetBytes(notePayload.Content));
+        //    Owner = owner;
+        //    Tags = notePayload.Tags;
+        //    Thumbnail = notePayload.Thumbnail;
+        //    ThumbnailHash = sha512Generator.ComputeHash(notePayload.Thumbnail);
+        //    Title = notePayload.Title.Trim();
+        //}
 
         /// <summary>
         /// The GUID of the note. Shouldn't ever change, and should be unique.

@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using ForSakenBorders.Backend.Database;
+using ForSakenBorders.Backend.Utilities;
 
 namespace ForSakenBorders.Backend.Api.v1.Payloads
 {
@@ -13,8 +12,6 @@ namespace ForSakenBorders.Backend.Api.v1.Payloads
     /// </summary>
     public class UserPayload
     {
-        private SHA512 _sHA512Generator = SHA512.Create();
-
         /// <summary>
         /// The roles the user has.
         /// </summary>
@@ -65,10 +62,11 @@ namespace ForSakenBorders.Backend.Api.v1.Payloads
             }
             else if (obj is User user)
             {
-                _sHA512Generator ??= SHA512.Create();
+                bool passwordsMatch = Password.Argon2idHash(user.PasswordSalt).SequenceEqual(user.PasswordHash);
+
                 return user.Email == Email
                     && user.Roles.SequenceEqual(Roles)
-                    && user.PasswordHash.SequenceEqual(_sHA512Generator.ComputeHash(Encoding.UTF8.GetBytes(Password)))
+                    && passwordsMatch
                     && user.Username == Username
                     && user.FirstName == FirstName
                     && user.LastName == LastName;

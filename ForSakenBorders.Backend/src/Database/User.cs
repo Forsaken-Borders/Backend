@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json.Serialization;
 using ForSakenBorders.Backend.Api.v1.Payloads;
+using ForSakenBorders.Backend.Utilities;
 
 namespace ForSakenBorders.Backend.Database
 {
@@ -23,11 +24,12 @@ namespace ForSakenBorders.Backend.Database
         /// </summary>
         /// <param name="userPayload">Retrieved from the API. See <see cref="UserPayload"/>.</param>
         /// <param name="sha512Generator">Used to calculate the password hash.</param>
-        public User(UserPayload userPayload, SHA512 sha512Generator)
+        public User(UserPayload userPayload)
         {
             Username = userPayload.Username.Trim();
             Email = userPayload.Email.Trim();
-            PasswordHash = sha512Generator.ComputeHash(Encoding.UTF8.GetBytes(userPayload.Password));
+            PasswordSalt = RandomNumberGenerator.GetBytes(1024);
+            PasswordHash = userPayload.Password.Argon2idHash(PasswordSalt);
             FirstName = userPayload.FirstName?.Trim();
             LastName = userPayload.LastName?.Trim();
             CreatedAt = DateTime.UtcNow;
@@ -95,6 +97,12 @@ namespace ForSakenBorders.Backend.Database
         /// </summary>
         [JsonIgnore]
         public byte[] PasswordHash { get; set; }
+
+        /// <summary>
+        /// The salt used to calculate the password hash.
+        /// </summary>
+        [JsonIgnore]
+        public byte[] PasswordSalt { get; set; }
 
         /// <summary>
         /// The user's login token. Used to verify that the user is logged in. Never exposed to the API.

@@ -1,10 +1,10 @@
 using System;
 using System.Globalization;
 using System.Linq;
-using System.Security.Cryptography;
 using ForSakenBorders.Backend.Api.Auth;
 using ForSakenBorders.Backend.Database;
 using ForSakenBorders.Backend.Utilities;
+using Konscious.Security.Cryptography;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -64,7 +64,6 @@ namespace ForSakenBorders.Backend
                 }
             }, ServiceLifetime.Transient);
 
-            services.AddSingleton(SHA512.Create());
             services.AddRouting();
             services.AddControllers();
             services.AddAuthentication("TokenAuthentication").AddScheme<AuthenticationSchemeOptions, TokenAuth>("TokenAuthentication", "Token Authentication", null);
@@ -81,17 +80,17 @@ namespace ForSakenBorders.Backend
             }
             database.Database.EnsureCreated();
 
-            if (database.Database.GetMigrations().Any())
-            {
-                try
-                {
-                    database.Database.Migrate();
-                }
-                catch (Exception)
-                {
-                    // Ignore
-                }
-            }
+            //if (database.Database.GetMigrations().Any())
+            //{
+            //    try
+            //    {
+            //        database.Database.Migrate();
+            //    }
+            //    catch (Exception)
+            //    {
+            //        // Ignore
+            //    }
+            //}
 
             app.UseRouting();
             app.UseAuthentication();
