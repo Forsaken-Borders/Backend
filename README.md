@@ -1,12 +1,12 @@
-# ForSaken Borders
+# Forsaken Borders
 Do you wish to have everything grouped together? Concerned that your data is being sold? Want to stay away from the big name companies?
 
-ForSaken Borders is all about security and privacy. All your data is encrypted server-side and double checks the hashes before serving you your content. This protects your information for many basic and intermediate attacks from hackers, while also ensuring those hosting the software is unable to irresponsibly handle your data.
+Forsaken Borders is all about security and privacy. All your data is encrypted server-side and double checks the hashes before serving you your content. This protects your information for many basic and intermediate attacks from hackers, while also ensuring those hosting the software is unable to irresponsibly handle your data.
 
-Additionally, with ForSaken Borders being Open Source, this means you can read or contribute to the code! No secrets are held, no data can be sold and no third parties will have access to your data.
+Additionally, with Forsaken Borders being Open Source, this means you can read or contribute to the code! No secrets are held, no data can be sold and no third parties will have access to your data.
 
 # Motivation
-ForSaken Borders aims to be not just some web tools, but a whole ecosystem of technology. I currently believe that a large part of the internet is sealed off only to those who have the required money. Money is a huge factor, affecting the quality of the user's experience. I believe that everyone's experience should be the same, regardless of money or status. That's how ForSaken Borders was made, and that's the goal kept in mind when making our services.
+Forsaken Borders aims to be not just some web tools, but a whole ecosystem of technology. I currently believe that a large part of the internet is sealed off only to those who have the required money. Money is a huge factor, affecting the quality of the user's experience. I believe that everyone's experience should be the same, regardless of money or status. That's how Forsaken Borders was made, and that's the goal kept in mind when making our services.
 
 # Services
 | Service Name | Implemented | Notes |
@@ -31,7 +31,7 @@ ForSaken Borders aims to be not just some web tools, but a whole ecosystem of te
 | - | - | - |
 | 2FA | Planned | See Authenticator service.
 | 3rd party embeds | Planned | Image hosting service, calendar stuff, etc |
-| 3rd party login/sign up (Facebook, Instagram, Discord) | Planned | Also allow other websites to login using ForSaken Borders. |
+| 3rd party login/sign up (Facebook, Instagram, Discord) | Planned | Also allow other websites to login using Forsaken Borders. |
 | Badges | Implemented | Used to show off achievements and status. |
 | Complete Encryption | Partially Implemented | Unfinished, pen testing required. |
 | Compression | Planned | Because storage is a privilege |

@@ -4,4 +4,4 @@ logs/
 config.jsonc.prod
 .vscode/
 .obsidian/
-ForSakenBorders.Backend/dev.db
+ForsakenBorders.Backend/dev.db
