@@ -68,9 +68,6 @@ namespace ForsakenBorders.Backend.Database
                    && NotePermissions == role.NotePermissions;
         }
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(Id, Name, Description, IsOfficial, Icon, Position, UserPermissions, NotePermissions);
-        }
+        public override int GetHashCode() => HashCode.Combine(Id, Name, Description, IsOfficial, Icon, Position, UserPermissions, NotePermissions);
     }
 }

@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Net;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using ForsakenBorders.Backend.Api.v1.Payloads;
@@ -34,18 +33,10 @@ namespace ForsakenBorders.Backend.Api.v1
         public async Task<IActionResult> Get(Guid requestedUserId)
         {
             User requestedUser = await _database.Users.FirstOrDefaultAsync(databaseUser => databaseUser.Id == requestedUserId);
-            if (requestedUser is null)
-            {
-                return NotFound();
-            }
-            else if (requestedUser.IsDeleted)
-            {
-                return StatusCode(410, requestedUser);
-            }
-            else
-            {
-                return Ok(requestedUser);
-            }
+            return requestedUser is null
+                ? NotFound()
+                : requestedUser.IsDeleted
+                    ? StatusCode(410, requestedUser) : Ok(requestedUser);
         }
 
         [HttpPost]
@@ -312,6 +303,13 @@ namespace ForsakenBorders.Backend.Api.v1
             _database.SaveChanges();
 
             return StatusCode(204, "Password reset.");
+        }
+
+        [HttpGet("whoami")]
+        public async Task<IActionResult> Get()
+        {
+            User requestedUser = await _database.Users.FirstOrDefaultAsync(databaseUser => databaseUser.Token == Guid.Parse(Request.Headers["Authorization"]));
+            return requestedUser is null ? NotFound() : Ok(requestedUser);
         }
     }
 }

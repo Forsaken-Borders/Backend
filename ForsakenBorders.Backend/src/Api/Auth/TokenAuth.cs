@@ -20,12 +20,9 @@ namespace ForsakenBorders.Backend.Api.Auth
         /// </summary>
         private readonly BackendContext _context;
 
-        public TokenAuth(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock, BackendContext context) : base(options, logger, encoder, clock)
-        {
-            // No idea what those unused parameteres are for, but they are required.
-            // If I could get rid of them, I would.
-            _context = context;
-        }
+        // No idea what those unused parameteres are for, but they are required.
+        // If I could get rid of them, I would.
+        public TokenAuth(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock, BackendContext context) : base(options, logger, encoder, clock) => _context = context;
 
         /// <summary>
         /// Checks if the user passed an authorization header and if the token is valid.

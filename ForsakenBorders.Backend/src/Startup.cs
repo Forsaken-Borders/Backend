@@ -1,10 +1,8 @@
 using System;
 using System.Globalization;
-using System.Linq;
 using ForsakenBorders.Backend.Api.Auth;
 using ForsakenBorders.Backend.Database;
 using ForsakenBorders.Backend.Utilities;
-using Konscious.Security.Cryptography;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -19,11 +17,7 @@ namespace ForsakenBorders.Backend
     public class Startup
     {
         public static IConfiguration Configuration { get; private set; }
-
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+        public Startup(IConfiguration configuration) => Configuration = configuration;
 
         public void ConfigureServices(IServiceCollection services)
         {

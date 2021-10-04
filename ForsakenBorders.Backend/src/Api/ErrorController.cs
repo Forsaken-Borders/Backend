@@ -1,9 +1,9 @@
 using System;
-using System.Collections.Generic;
 using ForsakenBorders.Backend.Database;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
 
 namespace ForsakenBorders.Backend.Api
 {
@@ -35,7 +35,7 @@ namespace ForsakenBorders.Backend.Api
                     log.Token = userToken;
                 }
 
-                if (HttpContext.Request.Headers.TryGetValue("User-Agent", out var userAgent))
+                if (HttpContext.Request.Headers.TryGetValue("User-Agent", out StringValues userAgent))
                 {
                     log.UserAgent = userAgent;
                 }

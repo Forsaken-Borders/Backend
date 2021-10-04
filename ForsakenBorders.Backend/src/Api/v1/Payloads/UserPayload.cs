@@ -75,9 +75,6 @@ namespace ForsakenBorders.Backend.Api.v1.Payloads
             return false;
         }
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(Roles, Email, Password, Username, FirstName, LastName);
-        }
+        public override int GetHashCode() => HashCode.Combine(Roles, Email, Password, Username, FirstName, LastName);
     }
 }
