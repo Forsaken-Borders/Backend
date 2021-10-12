@@ -6,14 +6,21 @@ using Serilog.Sinks.SystemConsole.Themes;
 
 namespace ForsakenBorders.Backend.Utilities
 {
+    /// <summary>
+    /// Specifies which theme to use for the console logger.
+    /// </summary>
     public class LoggerTheme : ConsoleTheme
     {
+        /// <inheritdoc />
         public const string AnsiStyleReset = "\x1b[0m";
 
+        /// <summary>
+        /// The default theme.
+        /// </summary>
         public static AnsiConsoleTheme Lunar { get; } = new AnsiConsoleTheme(
             new Dictionary<ConsoleThemeStyle, string>
             {
-                [ConsoleThemeStyle.Text] = "\x1b[0m",
+                [ConsoleThemeStyle.Text] = AnsiStyleReset,
                 [ConsoleThemeStyle.SecondaryText] = "\x1b[90m",
                 [ConsoleThemeStyle.TertiaryText] = "\x1b[90m",
                 [ConsoleThemeStyle.Invalid] = "\x1b[31m",

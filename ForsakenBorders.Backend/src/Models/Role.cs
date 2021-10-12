@@ -2,8 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace ForsakenBorders.Backend.Database
+namespace ForsakenBorders.Backend.Models
 {
+    /// <summary>
+    /// Roles that are attached to a <see cref="User"/>. Determines which actions a <see cref="User"/> can perform, and shows status.
+    /// </summary>
     /// <summary>
     /// Roles that are attached to a <see cref="User"/>. Determines which actions a <see cref="User"/> can perform, and shows status.
     /// </summary>
@@ -55,19 +58,44 @@ namespace ForsakenBorders.Backend.Database
         /// </summary>
         public Permissions NotePermissions { get; set; } = Permissions.EditOwn | Permissions.ViewOwn;
 
-        public override bool Equals(object obj)
-        {
-            return obj is Role role
-                   && Id.Equals(role.Id)
-                   && Name == role.Name
-                   && Description == role.Description
-                   && IsOfficial == role.IsOfficial
-                   && EqualityComparer<byte[]>.Default.Equals(Icon, role.Icon)
-                   && Position == role.Position
-                   && UserPermissions == role.UserPermissions
-                   && NotePermissions == role.NotePermissions;
-        }
+        /// <summary>
+        /// When the role was created at, in UTC time.
+        /// </summary>
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public override int GetHashCode() => HashCode.Combine(Id, Name, Description, IsOfficial, Icon, Position, UserPermissions, NotePermissions);
+        /// <summary>
+        /// When the role was updated at, in UTC time.
+        /// </summary>
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+        /// <inheritdoc />
+        public override bool Equals(object obj) => obj is Role role
+            && Id.Equals(role.Id)
+            && Name == role.Name
+            && Description == role.Description
+            && IsOfficial == role.IsOfficial
+            && EqualityComparer<byte[]>.Default.Equals(Icon, role.Icon)
+            && Position == role.Position
+            && UserPermissions == role.UserPermissions
+            && NotePermissions == role.NotePermissions
+            && CreatedAt == role.CreatedAt
+            && UpdatedAt == role.UpdatedAt;
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            HashCode hash = new();
+            hash.Add(Id);
+            hash.Add(Name);
+            hash.Add(Description);
+            hash.Add(IsOfficial);
+            hash.Add(Icon);
+            hash.Add(Position);
+            hash.Add(UserPermissions);
+            hash.Add(NotePermissions);
+            hash.Add(CreatedAt);
+            hash.Add(UpdatedAt);
+            return hash.ToHashCode();
+        }
     }
 }

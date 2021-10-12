@@ -18,13 +18,13 @@ namespace ForsakenBorders.Backend.Tests.Api.v1
         public UsersControllerTest()
         {
             _client.BaseAddress = new(new("http://localhost:5000/"));
-            if (!hasRan) // The constructor is called everytime a new test is ran. I'd rather wait 3 seconds instead of 21+
-            {
-                Environment.CurrentDirectory = "../../../../ForsakenBorders.Backend/";
-                Task.Run(() => Program.Main(new[] { "--dev=true", "--logging:disabled=true" }));
-                Task.Delay(3000).Wait();
-                hasRan = true;
-            }
+            //if (!hasRan) // The constructor is called everytime a new test is ran. I'd rather wait 3 seconds instead of 21+
+            //{
+            //    Environment.CurrentDirectory = "../../../../ForsakenBorders.Backend/";
+            //    Task.Run(() => Program.Main(new[] { "--dev=true", "--logging:disabled=true" }));
+            //    Task.Delay(3000).Wait();
+            //    hasRan = true;
+            //}
         }
 
         public static UserPayload CreateExampleUser(string email) => new()
@@ -45,7 +45,7 @@ namespace ForsakenBorders.Backend.Tests.Api.v1
             string token = (await response.Content.ReadAsStringAsync()).Replace("\"", "");
 
             HttpRequestMessage request = new(HttpMethod.Get, $"/api/v1/users/" + Guid.Empty);
-            request.Headers.Add("Authorization", token);
+            request.Headers.Add("X-Api-Key", token);
 
             HttpResponseMessage apiResponse = await _client.SendAsync(request);
             Assert.True(HttpStatusCode.NotFound == apiResponse.StatusCode, $"/api/v1/users/{Guid.Empty} did not throw a 404 NotFound. Instead it threw: {(int)apiResponse.StatusCode} {apiResponse.StatusCode}, {await apiResponse.Content.ReadAsStringAsync()}");
@@ -60,7 +60,7 @@ namespace ForsakenBorders.Backend.Tests.Api.v1
             string userId = response.Headers.Location.ToString().Split('/').Last();
 
             HttpRequestMessage request = new(HttpMethod.Get, $"/api/v1/users/" + userId);
-            request.Headers.Add("Authorization", token);
+            request.Headers.Add("X-Api-Key", token);
 
             HttpResponseMessage apiResponse = await _client.SendAsync(request);
             Assert.True(HttpStatusCode.OK == apiResponse.StatusCode, $"/api/v1/users/{userId} did not return 200 OK. Instead it threw: {(int)apiResponse.StatusCode} {apiResponse.StatusCode}, {await apiResponse.Content.ReadAsStringAsync()}");
@@ -83,7 +83,7 @@ namespace ForsakenBorders.Backend.Tests.Api.v1
             string token = (await createUserResponse.Content.ReadAsStringAsync()).Replace("\"", "");
 
             HttpRequestMessage request = new(HttpMethod.Delete, $"/api/v1/users/" + userId);
-            request.Headers.Add("Authorization", token);
+            request.Headers.Add("X-Api-Key", token);
             request.Content = JsonContent.Create(userPayload);
 
             HttpResponseMessage response = await _client.SendAsync(request);
@@ -94,7 +94,7 @@ namespace ForsakenBorders.Backend.Tests.Api.v1
             string token2 = (await createUserResponse.Content.ReadAsStringAsync()).Replace("\"", "");
 
             request = new(HttpMethod.Get, $"/api/v1/users/" + userId);
-            request.Headers.Add("Authorization", token2);
+            request.Headers.Add("X-Api-Key", token2);
 
             response = await _client.SendAsync(request);
             Assert.True(HttpStatusCode.Gone == response.StatusCode, $"/api/v1/users/ did not return 410 Gone. Instead it threw: {(int)response.StatusCode} {response.StatusCode}, {await response.Content.ReadAsStringAsync()}");
@@ -219,7 +219,7 @@ namespace ForsakenBorders.Backend.Tests.Api.v1
             string userId = createUserResponse.Headers.Location.ToString().Split('/').Last();
 
             HttpRequestMessage request = new(HttpMethod.Put, $"/api/v1/users/" + userId);
-            request.Headers.Add("Authorization", token);
+            request.Headers.Add("X-Api-Key", token);
             request.Content = new StringContent("", Encoding.UTF8, "application/json");
 
             HttpResponseMessage response = await _client.SendAsync(request);
@@ -237,7 +237,7 @@ namespace ForsakenBorders.Backend.Tests.Api.v1
 
             HttpRequestMessage request = new(HttpMethod.Put, $"/api/v1/users/" + userId);
             userPayload.Email = "Put_InvalidEmail @example.com";
-            request.Headers.Add("Authorization", token);
+            request.Headers.Add("X-Api-Key", token);
             request.Content = JsonContent.Create(userPayload);
 
             HttpResponseMessage response = await _client.SendAsync(request);
@@ -254,7 +254,7 @@ namespace ForsakenBorders.Backend.Tests.Api.v1
 
             HttpRequestMessage request = new(HttpMethod.Put, $"/api/v1/users/" + userId);
             userPayload.FirstName = "aFirstNameWhichIs33CharactersWide";
-            request.Headers.Add("Authorization", token);
+            request.Headers.Add("X-Api-Key", token);
             request.Content = JsonContent.Create(userPayload);
 
             HttpResponseMessage response = await _client.SendAsync(request);
@@ -271,7 +271,7 @@ namespace ForsakenBorders.Backend.Tests.Api.v1
 
             HttpRequestMessage request = new(HttpMethod.Put, $"/api/v1/users/" + userId);
             userPayload.FirstName = "someLastNameThatIs33CharsInLength";
-            request.Headers.Add("Authorization", token);
+            request.Headers.Add("X-Api-Key", token);
             request.Content = JsonContent.Create(userPayload);
 
             HttpResponseMessage response = await _client.SendAsync(request);
@@ -288,7 +288,7 @@ namespace ForsakenBorders.Backend.Tests.Api.v1
 
             HttpRequestMessage request = new(HttpMethod.Put, $"/api/v1/users/" + userId);
             userPayload.Username = "   ";
-            request.Headers.Add("Authorization", token);
+            request.Headers.Add("X-Api-Key", token);
             request.Content = JsonContent.Create(userPayload);
 
             HttpResponseMessage response = await _client.SendAsync(request);
@@ -305,7 +305,7 @@ namespace ForsakenBorders.Backend.Tests.Api.v1
 
             HttpRequestMessage request = new(HttpMethod.Put, $"/api/v1/users/" + userId);
             userPayload.Username = "usernameWithALengthOf33CharsExact";
-            request.Headers.Add("Authorization", token);
+            request.Headers.Add("X-Api-Key", token);
             request.Content = JsonContent.Create(userPayload);
 
             HttpResponseMessage response = await _client.SendAsync(request);
@@ -322,7 +322,7 @@ namespace ForsakenBorders.Backend.Tests.Api.v1
 
             HttpRequestMessage request = new(HttpMethod.Put, $"/api/v1/users/" + userId);
             userPayload.Username = "hi";
-            request.Headers.Add("Authorization", token);
+            request.Headers.Add("X-Api-Key", token);
             request.Content = JsonContent.Create(userPayload);
 
             HttpResponseMessage response = await _client.SendAsync(request);
@@ -341,7 +341,7 @@ namespace ForsakenBorders.Backend.Tests.Api.v1
             await _client.PostAsJsonAsync("/api/v1/users", userPayload);
 
             HttpRequestMessage request = new(HttpMethod.Put, $"/api/v1/users/" + userId);
-            request.Headers.Add("Authorization", token);
+            request.Headers.Add("X-Api-Key", token);
             request.Content = JsonContent.Create(userPayload);
 
             HttpResponseMessage response = await _client.SendAsync(request);
@@ -357,7 +357,7 @@ namespace ForsakenBorders.Backend.Tests.Api.v1
             string userId = createUserResponse.Headers.Location.ToString().Split('/').Last();
 
             HttpRequestMessage request = new(HttpMethod.Put, $"/api/v1/users/" + userId);
-            request.Headers.Add("Authorization", token);
+            request.Headers.Add("X-Api-Key", token);
             request.Content = JsonContent.Create(userPayload);
 
             HttpResponseMessage response = await _client.SendAsync(request);
@@ -385,7 +385,7 @@ namespace ForsakenBorders.Backend.Tests.Api.v1
             string token = (await createUserResponse.Content.ReadAsStringAsync()).Replace("\"", "");
 
             HttpRequestMessage request = new(HttpMethod.Delete, $"/api/v1/users/" + Guid.Empty);
-            request.Headers.Add("Authorization", token);
+            request.Headers.Add("X-Api-Key", token);
             request.Content = JsonContent.Create(userPayload);
 
             HttpResponseMessage response = await _client.SendAsync(request);
@@ -401,7 +401,7 @@ namespace ForsakenBorders.Backend.Tests.Api.v1
             string token = (await createUserResponse.Content.ReadAsStringAsync()).Replace("\"", "");
 
             HttpRequestMessage request = new(HttpMethod.Delete, $"/api/v1/users/" + userId);
-            request.Headers.Add("Authorization", token);
+            request.Headers.Add("X-Api-Key", token);
             request.Content = JsonContent.Create(userPayload);
 
             HttpResponseMessage response = await _client.SendAsync(request);
