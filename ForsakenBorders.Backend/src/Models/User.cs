@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography;
 using System.Text.Json.Serialization;
-using ForsakenBorders.Backend.Api.v1.Payloads;
 using ForsakenBorders.Backend.Utilities;
 
-namespace ForsakenBorders.Backend.Database
+namespace ForsakenBorders.Backend.Models
 {
     /// <summary>
     /// A user to be used across all of the Forsaken Borders software.
@@ -22,7 +21,6 @@ namespace ForsakenBorders.Backend.Database
         /// Creates a new user.
         /// </summary>
         /// <param name="userPayload">Retrieved from the API. See <see cref="UserPayload"/>.</param>
-        /// <param name="sha512Generator">Used to calculate the password hash.</param>
         public User(UserPayload userPayload)
         {
             Username = userPayload.Username.Trim();
@@ -115,7 +113,7 @@ namespace ForsakenBorders.Backend.Database
         /// When the user's token expires. Defaults to a week, if "remember me" is checked, set to a month. Client-side configurated. Never exposed to the API.
         /// </summary>
         [JsonIgnore]
-        public DateTime TokenExpiration { get; set; } = DateTime.UtcNow.AddDays(7);
+        public DateTime? TokenExpiration { get; set; } = DateTime.UtcNow.AddDays(7);
 
         /// <summary>
         /// The user's display name. May be duplicates.
@@ -138,16 +136,19 @@ namespace ForsakenBorders.Backend.Database
         /// <summary>
         /// Set only when a recovery token is generated.
         /// </summary>
-        /// <value></value>
+        [JsonIgnore]
         public Guid RecoveryToken { get; set; }
 
         /// <summary>
         /// Set only when a recovery token is generated. Expires in 30 minutes.
         /// </summary>
+        [JsonIgnore]
         public DateTime RecoveryTokenExpiration { get; set; }
 
+        /// <inheritdoc/>
         public override bool Equals(object obj) => obj is User user && Id.Equals(user.Id);
 
+        /// <inheritdoc/>
         public override int GetHashCode()
         {
             HashCode hash = new();

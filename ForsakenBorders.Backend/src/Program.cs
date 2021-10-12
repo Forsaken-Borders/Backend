@@ -1,15 +1,27 @@
-﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace ForsakenBorders.Backend
 {
+    /// <summary>
+    /// Program
+    /// </summary>
     public class Program
     {
-        public static void Main(string[] args) => CreateHostBuilder(args).Build().Run();
+        /// <summary>
+        /// Main
+        /// </summary>
+        /// <param name="args"></param>
+        public static void Main(string[] args) => CreateWebHostBuilder(args).Build().Run();
 
-        public static IHostBuilder CreateHostBuilder(string[] args) => Host
+        /// <summary>
+        /// Create the web host builder.
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns>IWebHostBuilder</returns>
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args) => WebHost
             .CreateDefaultBuilder(args)
             .ConfigureLogging(logging => logging.ClearProviders())
             .ConfigureAppConfiguration((hostingContext, config) =>
@@ -20,9 +32,6 @@ namespace ForsakenBorders.Backend
                 config.AddEnvironmentVariables("FORSAKENBORDERS_");
                 config.Build();
             })
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.UseStartup<Startup>();
-            });
+            .UseStartup<Startup>();
     }
 }

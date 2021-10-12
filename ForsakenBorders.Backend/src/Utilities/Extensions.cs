@@ -5,6 +5,9 @@ using Konscious.Security.Cryptography;
 
 namespace ForsakenBorders.Backend.Utilities
 {
+    /// <summary>
+    /// A bunch of static extension methods for various class types and conviences.
+    /// </summary>
     public static class Extensions
     {
         /// <summary>
@@ -48,7 +51,7 @@ namespace ForsakenBorders.Backend.Utilities
         /// Creates a Argon2ID hash of the given string, using the userid as associated data.
         /// </summary>
         /// <param name="password">The password to hash.</param>
-        /// <param name="userId">The user id to associate.</param>
+        /// <param name="passwordSalt">The salt to add to the password.</param>
         /// <returns>A 1024 Argon2ID hash.</returns>
         public static byte[] Argon2idHash(this string password, byte[] passwordSalt)
         {
