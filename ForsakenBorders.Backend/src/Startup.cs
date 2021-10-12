@@ -93,25 +93,24 @@ namespace ForsakenBorders.Backend
             }, ServiceLifetime.Transient);
 
             // Documentation!
-            services
-                .AddSwaggerGen(c =>
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    c.SwaggerDoc("1.0.0", new OpenApiInfo
+                    Version = "v1",
+                    Title = "Forsaken Borders User Service",
+                    Description = "Forsaken Borders User Service",
+                    Contact = new OpenApiContact()
                     {
-                        Version = "1.0.0",
-                        Title = "Forsaken Borders User Service",
-                        Description = "Forsaken Borders User Service",
-                        Contact = new OpenApiContact()
-                        {
-                            Name = "Lunar Starstrum",
-                            Url = new Uri("https://github.com/Forsaken-Borders/Backend"),
-                            Email = "lunar@forsaken-borders.net"
-                        }
-                    });
-                    c.CustomSchemaIds(type => type.FullName);
-                    c.IncludeXmlComments($"{AppContext.BaseDirectory}{Path.DirectorySeparatorChar}{_hostingEnv.ApplicationName}.xml");
-                    c.OperationFilter<GeneratePathParamsValidationFilter>();
+                        Name = "Lunar Starstrum",
+                        Url = new Uri("https://github.com/Forsaken-Borders/Backend"),
+                        Email = "lunar@forsaken-borders.net"
+                    }
                 });
+                c.CustomSchemaIds(type => type.FullName);
+                c.IncludeXmlComments($"{AppContext.BaseDirectory}{Path.DirectorySeparatorChar}{_hostingEnv.ApplicationName}.xml");
+                c.OperationFilter<GeneratePathParamsValidationFilter>();
+            });
 
             services.AddAuthentication(ApiKeyAuthenticationHandler.SchemeName).AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler>(ApiKeyAuthenticationHandler.SchemeName, ApiKeyAuthenticationHandler.SchemeName, null);
             services.AddAuthorization(options => options.AddPolicy(ApiKeyAuthenticationHandler.SchemeName, policy => policy.RequireAuthenticatedUser()));
@@ -151,11 +150,7 @@ namespace ForsakenBorders.Backend
             });
 
             app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/1.0.0/swagger.json", "Forsaken Borders User Service");
-            });
-
+            app.UseSwaggerUI();
         }
     }
 }
