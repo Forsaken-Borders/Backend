@@ -25,7 +25,4 @@ The user login service aims to fully comply with the [OWASP Authentication Cheat
 Have any questions or suggestions? Either open up a Github issue or join the [Discord](https://discord.gg/DFqMheA8Be)!
 
 # Contributing
-All PR's are welcome! All we ask for is:
-- Properly formatted code
-- Properly documented code
-- A lengthy description of what your PR does, how it achieves it, and why you feel it should be accepted
+See the [CONTRIBUTING.md](./CONTRIBUTING.md) file
