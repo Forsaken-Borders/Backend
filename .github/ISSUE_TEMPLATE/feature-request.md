@@ -7,6 +7,8 @@ assignees: ''
 
 ---
 
+<!-- These are HTML comments, meaning they won't show up when you create the issue. When you're filling out the issue, just delete the comment itself, as they're intended to be examples. -->
+
 ## What's your suggestion?
 <!-- The user service should have user avatars available. -->
 
